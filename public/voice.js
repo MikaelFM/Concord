@@ -260,8 +260,8 @@ class Voice {
   _announceAll() { for (const p of this.peers.values()) this._announce(p); }
 
   _createPeer(id) {
-    // Sem STUN/TURN: dentro do Radmin VPN / rede local os PCs se enxergam direto.
-    const pc = new RTCPeerConnection({ iceServers: [] });
+    // Na internet usa o STUN/TURN do servidor; no Radmin / rede local a lista vem vazia (os PCs se enxergam direto).
+    const pc = new RTCPeerConnection({ iceServers: (this.h.ice && this.h.ice()) || [] });
     const p = {
       id, pc, polite: this.myId > id, makingOffer: false, ignoreOffer: false, established: false, pending: false,
       queue: Promise.resolve(), senders: { camera: [], screen: [] }, audio: new Map(),

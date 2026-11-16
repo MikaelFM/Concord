@@ -22,9 +22,9 @@
     "Mensagens no chat da chamada avisam (som e popup) quando o chat está minimizado ou você está em tela cheia sem o chat aberto.",
     "Os nomes dos cargos na lista de membros aparecem como foram escritos, sem virar tudo maiúsculo."
   ],
-  "published": "2026-11-16T16:51:04.856Z",
+  "published": "2026-11-16T17:11:35.496Z",
   "files": {
-    "server.js": "b5c48319f18a92af6275f54d520af793ad80baeb45ef831f1ad45333877c0561",
+    "server.js": "344d7e78a109343167beeaa22b2abc7f65a9da51a32a5fd95f5c612136dfb36d",
     "ws.js": "374b253f6dc492f4313bd2f7d3ee994c60a7bfd457c3d97d7e81551eeac73515",
     "package.json": "63290e99a31199e35b34f47c0a7523094cfc47cca1e0678ad2ded8331a4abbda",
     "desktop/build.js": "43e77990f0d4539e008a8e60b810d821c7a489795cd42a64c64c3cc58222130c",
@@ -36,13 +36,16 @@
     "desktop/overlay-preload.js": "a7237c314dc487ca5c852a292d711cbb1a248a6026f753bfd74d4a16672fa086",
     "desktop/overlay.html": "a259181c6b71db495fe1e6ecf622aa817340721911e6deb9b06055ec8e082c14",
     "desktop/preload.js": "f6d6f0a269f3976038d51a098fde55ddfb1f73e85fd4d03a21dd3e795eb5d5fd",
-    "public/app.js": "a4bafad5fec8fd27cda6c578805ba97a6399e24e19578b324801586e6410bb12",
+    "public/app.js": "10b94084d739a4021e9db5ddf611033e85918cb56897531679f8c8d6958655bd",
     "public/emojis.js": "26f73da6bf513c276170d0a1c1448a357e554edb30b5935c927ee094f0ba1e72",
     "public/icons.js": "d24c37445235b18afde080c5ba6b1525c9ff0c64464261186b778aa155767aad",
     "public/index.html": "b7b39e819961e37a7c13d88301df8b6dd583697fcac019aebc5fc9a93c28f330",
     "public/logo.png": "fd9cc198c7fb266797eae9f33de94bc88672ef52f480cf890f5b0230e0dd317c",
     "public/novidades.json": "2572ecc556a08309388f4da1ef6cc47bef94e64ae28daca6f8bdb7ec88e623ec",
     "public/style.css": "62673c4f380f78cfc81e3a829d48fb92c942f5ebe8dbb3252efc01e1ede0f023",
-    "public/voice.js": "52444a613bcd6e405605e34beb06b5c6367f95358778bd8ebc44b4cd0e9bfc9f"
+    "public/voice.js": "b02a3a29e043e18271133d19c49e667fb7ec59eecf5acf02d32bfb4349ea8c48",
+    "servidor/atualizar.js": "bb3354f190d9381f21bab1898e7624ca5246493776776747c3b60e12e40e611c",
+    "servidor/importar-dados.sh": "769889864c001ba406c497039ac80d1f26f116976848e7f4c3ce105a1dea75a0",
+    "servidor/instalar.sh": "bb5d76891aa90e89e0c74917cfa3896c7f5abec17ad411e720a6c5a7177dc268"
   }
 }

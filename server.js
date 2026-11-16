@@ -102,7 +102,28 @@ const rid = (n = 8) => crypto.randomBytes(n).toString('hex');
 
 function start(opts = {}) {
   const PORT = Number(opts.port || process.env.PORT) || 3000;
-  const DATA = opts.dataDir || path.join(__dirname, 'data');
+  const DATA = opts.dataDir || process.env.DATA_DIR || path.join(__dirname, 'data');
+  // servidor de apoio das chamadas (coturn), para quem não se conecta direto pela internet
+  const TURN_HOST = opts.turnHost || process.env.TURN_HOST || '';
+  const TURN_SECRET = opts.turnSecret || process.env.TURN_SECRET || '';
+  // No servidor online: quando alguém abre o app, pede uma verificada rápida no GitHub
+  // (o systemd vigia este arquivo e roda o atualizador). No máximo uma vez a cada 2 minutos.
+  let lastPoke = 0;
+  const pokeUpdate = () => {
+    if (!process.env.CONCORD_REPO || Date.now() - lastPoke < 120000) return;
+    lastPoke = Date.now();
+    fs.writeFile(path.join(DATA, '.verificar-atualizacao'), String(lastPoke), () => {});
+  };
+  const iceFor = (uid) => {
+    if (!TURN_HOST) return []; // rede local / Radmin: os PCs se enxergam direto
+    const list = [{ urls: `stun:${TURN_HOST}:3478` }];
+    if (TURN_SECRET) {
+      const username = `${Math.floor(Date.now() / 1000) + 7 * 86400}:${uid}`; // vale 7 dias
+      const credential = crypto.createHmac('sha1', TURN_SECRET).update(username).digest('base64');
+      list.push({ urls: [`turn:${TURN_HOST}:3478?transport=udp`, `turn:${TURN_HOST}:3478?transport=tcp`], username, credential });
+    }
+    return list;
+  };
   const UPLOADS = path.join(DATA, 'uploads');
   const CERTS = path.join(DATA, 'certs');
   const log = opts.log || (opts.quiet ? () => {} : (...a) => console.log(...a));
@@ -352,7 +373,8 @@ function start(opts = {}) {
       }
     };
     for (const f of ['server.js', 'ws.js', 'package.json']) add(f);
-    walk('desktop', /\.(js|html|png|ico)$/i);
+    walk('desktop', /\.(js|json|html|png|ico)$/i);
+    delete files['desktop/update-source.json'];
     walk('public', /\.(js|json|html|css|png|ico|svg|woff2?|mp3|ogg|wav)$/i);
     let version = '0.0.0';
     try { version = JSON.parse(fs.readFileSync(path.join(APP_ROOT, 'package.json'), 'utf8')).version; } catch { /* ignora */ }
@@ -516,9 +538,10 @@ function start(opts = {}) {
     }
     c.ready = true;
     clients.set(c.id, c);
+    pokeUpdate();
     const mine = [...guilds.values()].filter((g) => g.members[uid]);
     sendTo(c, {
-      type: 'welcome', you: publicUser(c), token: c.token, username: c.username, now: Date.now(), perms: PERMS,
+      type: 'welcome', you: publicUser(c), token: c.token, username: c.username, now: Date.now(), perms: PERMS, ice: iceFor(uid),
       users: [...clients.values()].map(publicUser),
       profiles: { ...Object.fromEntries(profiles), [BOT_ID]: BOT_PROFILE },
       guilds: mine.map(guildPayload),

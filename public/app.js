@@ -313,6 +313,7 @@ function onMessage(m) {
       state.token = m.token;
       state.connected = true;
       state.perms = m.perms;
+      state.ice = m.ice || [];
       state.clockOffset = m.now - Date.now();
       state.users = new Map(m.users.map((u) => [u.id, u]));
       state.profiles = new Map(Object.entries(m.profiles));
@@ -2942,7 +2943,7 @@ async function inviteBases() {
     const port = info.port || location.port || 443;
     const local = ['localhost', '127.0.0.1'].includes(location.hostname);
     const list = info.addresses.map((a) => `https://${a}:${port}`);
-    addressCache = local ? list : [location.origin, ...list.filter((x) => x !== location.origin)];
+    addressCache = local ? list : [location.origin]; // no servidor online, o endereço certo é o que você está usando
     if (!addressCache.length) addressCache = [location.origin];
   }
   return addressCache;
@@ -2970,7 +2971,7 @@ async function inviteModal(g = curGuild()) {
     });
     const exp = EXPIRE_OPTS.find((x) => x[0] === hours)[1];
     linkBox.replaceChildren(...rows,
-      h('p', { class: 'invite-meta', text: `Código: ${res.code} · expira: ${hours ? 'em ' + exp : 'nunca'} · ${max ? max + ' usos' : 'usos ilimitados'}. No app, dá para colar o link ou só o código em "Entrar em um servidor".` }));
+      h('p', { class: 'invite-meta', text: `Código: ${res.code} · expira: ${hours ? 'em ' + exp : 'nunca'} · ${max ? max + ' usos' : 'usos ilimitados'}. No app, dá para colar o link ou só o código em "Entrar com um convite".` }));
   };
   const sel = (opts, cur, on) => {
     const s = h('select', { class: 'select' }, ...opts.map(([v, l]) => h('option', { value: v, text: l, selected: v === cur })));
@@ -2980,7 +2981,7 @@ async function inviteModal(g = curGuild()) {
   modal({
     title: `Convidar para "${g.name}"`,
     body: [
-      h('p', { text: 'Mande o link para a pessoa. O que começa com 26. é pelo Radmin VPN.' }),
+      h('p', { text: 'Mande o link para a pessoa. Quem já tem o app entra direto no servidor; no navegador, é só abrir o link.' }),
       linkBox,
       h('div', { class: 'invite-opts' },
         h('div', {}, h('label', { text: 'Expira em' }), sel(EXPIRE_OPTS, hours, (v) => { hours = v; })),
@@ -3490,6 +3491,7 @@ const remoteVideo = {}; // uid -> { camera, screen }
 
 const voice = new Voice({
   send,
+  ice: () => state.ice || [],
   onRemoteVideo: (id, kind, stream) => {
     remoteVideo[id] = remoteVideo[id] || {};
     remoteVideo[id][kind] = stream;
@@ -4247,7 +4249,6 @@ function openSettings(section = 'conta') {
     h('div', { class: 'sep' }),
     h('button', { text: 'Novidades', onclick: () => showChangelog(false) }),
     h('button', { text: 'Reportar um bug', onclick: () => bugModal() }),
-    desk ? h('button', { class: 'danger', text: 'Trocar de servidor', onclick: () => desk.home() }) : null,
     verBox));
   const onKey = (e) => { if (e.key === 'Escape' && !els.modalRoot.children.length) { e.stopPropagation(); close(); } };
   function close() { stopTests(); root.remove(); document.removeEventListener('keydown', onKey, true); }
