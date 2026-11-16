@@ -1,13 +1,25 @@
 [
   {
-    "version": "2.2.0",
-    "date": "11/11/2026",
-    "title": "Chamadas e sobreposição no jogo",
+    "version": "2.3.0",
     "items": [
+      "O Concord agora fica num servidor na internet, ligado o tempo todo: ninguém precisa mais deixar o PC aberto hospedando, e não precisa mais de Radmin.",
+      "O app entra sozinho no servidor ao abrir. Se ele estiver fora do ar, aparece um botão para tentar de novo.",
+      "Chamadas funcionam pela internet, inclusive com internet de celular ou roteadores mais chatos.",
+      "Atualizações: o app confere se tem versão nova logo ao abrir, e o servidor se atualiza sozinho.",
       "Sons do servidor: em Configurações do servidor → Sons dá para escolher um som próprio para quando alguém entra ou sai da chamada, mensagem nova e começo/fim de live. Quem preferir os padrões desliga em Configurações → Notificações.",
       "\"Testar microfone\" agora toca a sua voz de volta para você se ouvir (com o eliminador de ruído aplicado) e vira \"Parar teste\" enquanto está ligado.",
       "O app lembra se você deixou o microfone ou o fone mutado e abre do mesmo jeito.",
       "Ícone novo: o Concorde.",
+      "O app lembra o último servidor e entra direto nele.",
+      "Mensagens no chat da chamada avisam (som e popup) quando o chat está minimizado ou você está em tela cheia sem o chat aberto.",
+      "Os nomes dos cargos na lista de membros aparecem como foram escritos, sem virar tudo maiúsculo."
+    ]
+  },
+  {
+    "version": "2.2.0",
+    "date": "11/11/2026",
+    "title": "Chamadas e sobreposição no jogo",
+    "items": [
       "Na chamada, as pessoas ficam grandes à esquerda e o chat da chamada fica à direita (dá para minimizar).",
       "Quando alguém faz live, a tela fica em destaque ocupando toda a largura e as câmeras ficam numa fileira embaixo (o botão com as pessoas esconde ou mostra a fileira; clique numa câmera para pôr ela em destaque).",
       "Dá para mudar a transparência da sobreposição (Configurações → Sobreposição no jogo).",
@@ -17,13 +29,10 @@
       "Atalhos do teclado: Ctrl+K para ir a qualquer sala, Alt+↑/↓ para trocar de sala, Ctrl+Shift+M/D para microfone e fone, e muito mais (Ctrl+/ mostra todos).",
       "No app, os atalhos de microfone, fone e sobreposição funcionam com o jogo na frente enquanto você está em chamada.",
       "Notificações do Windows funcionando com o app minimizado, com botão para testar em Configurações → Notificações.",
-      "O app lembra o último servidor e entra direto nele.",
       "A versão do app e do servidor aparece no fim das Configurações.",
       "O bot de música foi desligado por enquanto.",
       "Baixar arquivos do chat: botão nas imagens (e na imagem ampliada); no app, os arquivos vão direto para a pasta Downloads com opção de abrir.",
-      "Atalhos de microfone, fone e sobreposição aceitam uma tecla sozinha (ex.: F8).",
-      "Mensagens no chat da chamada avisam (som e popup) quando o chat está minimizado ou você está em tela cheia sem o chat aberto.",
-      "Os nomes dos cargos na lista de membros aparecem como foram escritos, sem virar tudo maiúsculo."
+      "Atalhos de microfone, fone e sobreposição aceitam uma tecla sozinha (ex.: F8)."
     ]
   },
   {

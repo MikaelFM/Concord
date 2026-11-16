@@ -1,7 +1,7 @@
 {
   "name": "concord",
   "productName": "Concord",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Chat, voz, câmera e compartilhamento de tela para a galera (Radmin VPN / rede local)",
   "main": "desktop/main.js",
   "private": true,

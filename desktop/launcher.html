@@ -12,7 +12,7 @@
       font: 15px/1.4 "Segoe UI", "Noto Sans", Arial, sans-serif; color: #dbdee1; display: grid; place-items: center; padding: 16px;
       background: #0b0d17;
     }
-    .card { width: 100%; max-width: 760px; background: #161a2e; border: 1px solid #20253f; border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,.5); overflow: hidden; }
+    .card { width: 100%; max-width: 440px; background: #161a2e; border: 1px solid #20253f; border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,.5); overflow: hidden; }
     header { padding: 28px 32px 8px; text-align: center; }
     .logo { width: 72px; height: 72px; margin: 0 auto 12px; }
     .logo svg, .logo img { width: 100%; height: 100%; display: block; }
@@ -39,6 +39,16 @@
     .ver { color: #8b91b4; margin-bottom: 4px; font-weight: 600; }
     .remember { display: flex; align-items: center; justify-content: center; gap: 8px; margin: -12px 32px 14px; font-size: 14px; color: #b5bac1; text-transform: none; font-weight: 500; cursor: pointer; }
     .remember input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+    .main { padding: 20px 32px 8px; display: flex; flex-direction: column; gap: 14px; }
+    .main > .primary { padding: 13px; }
+    details { color: #b5bac1; font-size: 14px; }
+    summary { cursor: pointer; text-align: center; color: #949ba4; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary:hover { color: #dbdee1; text-decoration: underline; }
+    details form { margin-top: 12px; }
+    .secondary { background: #252b4d; }
+    .secondary:hover { background: #2f3660; }
+    .error { margin: 12px 32px 0; }
     footer { padding: 0 32px 24px; color: #6d6f78; font-size: 12px; text-align: center; }
     @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
   </style>
@@ -48,63 +58,52 @@
     <header>
       <div class="logo"><img class="logo-svg" src="icon.png" alt="Concord"></div>
       <h1>Concord</h1>
-      <p>Converse, fale e compartilhe a tela com a galera pelo Radmin VPN.</p>
+      <p id="tagline">Converse, fale e compartilhe a tela com a galera.</p>
     </header>
     <div class="error" id="error" hidden></div>
-    <div class="cols">
-      <form class="box" id="joinForm">
-        <h2><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3.5-3.5a4 4 0 0 0-5.7-5.7L12 6.3"/><path d="M14 10a4 4 0 0 0-5.7 0l-3.5 3.5a4 4 0 0 0 5.7 5.7l1.5-1.5"/></svg>Entrar em um servidor</h2>
-        <p>Use o endereço ou o link de convite que o seu amigo mandou (pelo Radmin, começa com 26.).</p>
-        <label for="address">Endereço do servidor</label>
-        <input id="address" placeholder="26.123.45.67:3000 ou link de convite" autocomplete="off">
-        <div class="recent" id="recent"></div>
-        <button class="primary" type="submit">Entrar</button>
-      </form>
-      <form class="box" id="hostForm">
-        <h2><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>Criar meu servidor</h2>
-        <p>Este PC vira o servidor. Deixe o app aberto enquanto a galera estiver usando e mande o seu IP do Radmin para eles.</p>
-        <label for="port">Porta</label>
-        <input id="port" type="number" min="1024" max="65535" value="3000">
-        <button class="green" type="submit">Hospedar e entrar</button>
-      </form>
+    <div class="main">
+      <button class="primary" id="retry" hidden>Tentar de novo</button>
+      <details id="other">
+        <summary>Usar outro endereço</summary>
+        <form id="joinForm">
+          <label for="address">Endereço do servidor</label>
+          <input id="address" placeholder="exemplo.com ou 123.45.67.89:3000" autocomplete="off">
+          <button class="secondary" type="submit">Entrar</button>
+        </form>
+      </details>
     </div>
-    <label class="remember"><input type="checkbox" id="remember" checked> Entrar direto da próxima vez que abrir o app</label>
-    <footer><div id="ver" class="ver"></div>Para voltar a esta tela depois: Configurações → Trocar de servidor. Na primeira vez, o Windows pode perguntar sobre o firewall: permita em redes privadas e públicas.</footer>
+    <footer><div id="ver" class="ver"></div></footer>
   </div>
   <script>
     const d = window.desktop;
     const $ = (id) => document.getElementById(id);
-    const err = new URLSearchParams(location.search).get('erro');
-    if (err) { $('error').textContent = err; $('error').hidden = false; }
     const showError = (msg) => { $('error').textContent = msg; $('error').hidden = false; };
+    const err = new URLSearchParams(location.search).get('erro');
+    if (err) showError(err);
+    if (d.version) d.version().then((v) => { $('ver').textContent = 'Concord ' + v; });
     d.config().then((cfg) => {
-      if (cfg.lastPort) $('port').value = cfg.lastPort;
-      $('remember').checked = cfg.autoEnabled !== false;
-      if (d.version) d.version().then((v) => { $('ver').textContent = 'Concord ' + v; });
-      const recent = cfg.recent || [];
-      if (recent[0]) $('address').value = recent[0];
-      for (const r of recent) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.textContent = r;
-        b.onclick = () => { $('address').value = r; $('joinForm').requestSubmit(); };
-        $('recent').append(b);
+      if (cfg.official) {
+        $('retry').hidden = false;
+        if (!err) { $('tagline').textContent = 'Conectando…'; d.retry(); }
+      } else {
+        // ainda sem servidor oficial configurado: mostra direto o campo de endereço
+        $('other').open = true;
+        $('other').querySelector('summary').hidden = true;
       }
+      const last = cfg.auto && cfg.auto.url;
+      if (last) $('address').value = new URL(last).host;
     });
-    $('joinForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const btn = e.submitter || e.target.querySelector('button[type=submit]');
-      btn.disabled = true;
-      const r = await d.join($('address').value, $('remember').checked);
-      if (!r.ok) { showError(r.error); btn.disabled = false; }
+    $('retry').onclick = async () => {
+      $('retry').disabled = true; $('retry').textContent = 'Conectando…';
+      const r = await d.retry();
+      if (!r.ok) { showError(r.error); $('retry').disabled = false; $('retry').textContent = 'Tentar de novo'; }
     };
-    $('hostForm').onsubmit = async (e) => {
+    $('joinForm').onsubmit = async (e) => {
       e.preventDefault();
       const btn = e.target.querySelector('button[type=submit]');
       btn.disabled = true;
-      btn.textContent = 'Iniciando…';
-      const r = await d.host($('port').value, $('remember').checked);
-      if (!r.ok) { showError(r.error); btn.disabled = false; btn.textContent = 'Hospedar e entrar'; }
+      const r = await d.join($('address').value);
+      if (!r.ok) { showError(r.error); btn.disabled = false; }
     };
   </script>
 </body>

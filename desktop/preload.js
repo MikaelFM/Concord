@@ -4,8 +4,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('desktop', {
   isDesktop: true,
   config: () => ipcRenderer.invoke('config:get'),
-  host: (port, remember) => ipcRenderer.invoke('host', port, remember),
-  join: (address, remember) => ipcRenderer.invoke('join', address, remember),
+  retry: () => ipcRenderer.invoke('retry'),
+  join: (address) => ipcRenderer.invoke('join', address),
   home: () => ipcRenderer.invoke('home'),
   getSources: () => ipcRenderer.invoke('screen:sources'),
   selectSource: (id, audio) => ipcRenderer.invoke('screen:select', id, audio),

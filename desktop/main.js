@@ -14,7 +14,6 @@ app.setAppUserModelId('Concord');
 if (!app.requestSingleInstanceLock()) app.quit();
 
 let win = null;
-let hosted = null; // { port, close }
 let allowedHost = null; // servidor escolhido (aceitamos o certificado autoassinado dele)
 let pendingSource = null; // { id, audio } escolhido no seletor de tela
 
@@ -73,25 +72,36 @@ function createWindow() {
   win.webContents.on('did-fail-load', (e, code, desc, url, isMain) => {
     log('FALHA AO CARREGAR', code, desc, url, isMain);
     if (!isMain || code === -3) return;
-    goHome(`Não consegui conectar em ${url.replace(/\/$/, '')} (${desc}). Confira o endereço, se o servidor está aberto e se o Radmin está conectado.`);
+    goHome(`Não consegui conectar ao servidor do Concord (${desc}). Confira sua internet e tente de novo em instantes.`);
   });
   autoStart(cfg);
 }
 
-// Abre direto o último servidor (se a pessoa deixou marcado "Entrar direto da próxima vez").
-async function autoStart(cfg) {
-  const a = cfg.auto;
-  if (!a || cfg.autoEnabled === false) return goHome();
+// Servidor oficial do Concord (fica em desktop/servidor.json e chega pelas atualizações).
+function officialServer() {
   try {
-    if (a.mode === 'host') {
-      const h = await startHost(Number(a.port) || 3000);
-      openServer(`https://localhost:${h.port}`);
-    } else if (a.mode === 'join' && a.url) openServer(a.url);
-    else goHome();
-    log('entrada automática', a.mode, a.url || a.port);
-  } catch (err) {
-    goHome(err.code === 'EADDRINUSE' ? `A porta ${a.port} já está em uso. Escolha outra ou feche o outro servidor.` : 'Não deu para abrir o servidor automaticamente: ' + err.message);
-  }
+    const a = String(JSON.parse(fs.readFileSync(path.join(__dirname, 'servidor.json'), 'utf8')).address || '').trim();
+    return a ? normalizeAddress(a) : null;
+  } catch { return null; }
+}
+function normalizeAddress(address) {
+  let a = String(address || '').trim();
+  if (!a) return null;
+  if (!/^https?:\/\//i.test(a)) a = 'https://' + a;
+  try {
+    const u = new URL(a.replace(/^http:/i, 'https:'));
+    if (!u.port && !/[a-z]/i.test(u.hostname.replace(/\./g, ''))) u.port = '3000'; // IP sem porta: 3000; domínio: 443
+    return u.toString();
+  } catch { return null; }
+}
+
+// Abre direto o servidor oficial. Se a pessoa escolheu outro endereço na tela de erro, usa esse.
+function autoStart(cfg) {
+  const custom = cfg.auto && cfg.auto.mode === 'join' && cfg.auto.custom && cfg.auto.url;
+  const url = custom || officialServer() || (cfg.auto && cfg.auto.mode === 'join' && cfg.auto.url);
+  if (!url) return goHome();
+  log('entrada automática', url);
+  openServer(url);
 }
 
 function goHome(error) {
@@ -144,19 +154,10 @@ function setupSession() {
   });
 }
 
-async function startHost(port) {
-  if (hosted && hosted.port === port) return hosted;
-  if (hosted) { hosted.close(); hosted = null; }
-  const { start } = require(path.join(__dirname, '..', 'server.js'));
-  hosted = await start({ port, dataDir: path.join(app.getPath('userData'), 'servidor'), log: (...a) => log('SERVIDOR', ...a) });
-  log('servidor iniciado na porta', port, hosted.addresses);
-  return hosted;
-}
-
 function openServer(url) {
   const u = new URL(url);
   allowedHost = u.hostname;
-  if (!/^(localhost|127\.0\.0\.1)$/.test(u.hostname)) setTimeout(() => checkUpdate(u.origin), 4000);
+  if (!updateSource() && !/^(localhost|127\.0\.0\.1)$/.test(u.hostname)) setTimeout(() => checkUpdate(u.origin), 3000);
   // links de convite (…/convite/codigo) abrem direto no convite
   win.loadURL(u.origin + (/^\/convite\/[a-z0-9]+$/i.test(u.pathname) ? u.pathname : '/'));
 }
@@ -237,7 +238,6 @@ async function runUpdate(source, { interactive = false } = {}) {
       fs.renameSync(dest + '.novo', dest);
     }
     log('atualização aplicada:', tmp.length, 'arquivos');
-    if (hosted) { hosted.close(); hosted = null; }
     app.relaunch();
     app.exit(0);
     return { status: 'updated' };
@@ -426,29 +426,24 @@ function detectGame() {
 setInterval(detectGame, 15000);
 
 // ---------- IPC ----------
-ipcMain.handle('config:get', () => readConfig());
-ipcMain.handle('host', async (e, port, remember) => {
-  port = Number(port) || 3000;
-  try {
-    const h = await startHost(port);
-    writeConfig({ ...readConfig(), lastPort: port, autoEnabled: remember !== false, auto: { mode: 'host', port } });
-    openServer(`https://localhost:${h.port}`);
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, error: err.code === 'EADDRINUSE' ? `A porta ${port} já está em uso (talvez o servidor já esteja aberto em outra janela).` : err.message };
-  }
-});
-ipcMain.handle('join', async (e, address, remember) => {
-  let a = String(address || '').trim();
-  if (!a) return { ok: false, error: 'Digite o endereço do servidor.' };
-  if (!/^https?:\/\//i.test(a)) a = 'https://' + a;
-  let u;
-  try { u = new URL(a.replace(/^http:/i, 'https:')); } catch { return { ok: false, error: 'Endereço inválido.' }; }
-  if (!u.port) u.port = '3000';
+ipcMain.handle('config:get', () => ({ ...readConfig(), official: officialServer() }));
+// tentar de novo no servidor oficial (esquece um endereço escolhido à mão)
+ipcMain.handle('retry', () => {
   const cfg = readConfig();
-  const recent = [u.host, ...(cfg.recent || []).filter((x) => x !== u.host)].slice(0, 6);
-  writeConfig({ ...cfg, recent, autoEnabled: remember !== false, auto: { mode: 'join', url: u.toString() } });
-  openServer(u.toString());
+  const url = officialServer() || (cfg.auto && cfg.auto.url);
+  if (!url) return { ok: false, error: 'Nenhum servidor configurado.' };
+  if (cfg.auto && cfg.auto.custom) writeConfig({ ...cfg, auto: null });
+  openServer(url);
+  return { ok: true };
+});
+// endereço escolhido à mão (para testes ou se o servidor oficial mudar)
+ipcMain.handle('join', async (e, address) => {
+  if (!String(address || '').trim()) return { ok: false, error: 'Digite o endereço do servidor.' };
+  const url = normalizeAddress(address);
+  if (!url) return { ok: false, error: 'Endereço inválido.' };
+  const off = officialServer();
+  writeConfig({ ...readConfig(), auto: { mode: 'join', url, custom: !off || url !== off } });
+  openServer(url);
   return { ok: true };
 });
 ipcMain.handle('home', () => goHome());
@@ -475,7 +470,7 @@ ipcMain.on('download-open', (e, p) => { if (downloaded.has(p)) shell.openPath(p)
 ipcMain.on('download-show', (e, p) => { if (downloaded.has(p)) shell.showItemInFolder(p); });
 
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
-app.whenReady().then(() => { ensureStartMenuShortcut(); setupSession(); createWindow(); setTimeout(() => checkGithubUpdate(false), 5000); });
-app.on('window-all-closed', () => { if (hosted) hosted.close(); app.quit(); });
+app.whenReady().then(() => { ensureStartMenuShortcut(); setupSession(); createWindow(); setTimeout(() => checkGithubUpdate(false), 1500); }); // verificada rápida ao abrir
+app.on('window-all-closed', () => app.quit());
 app.on('before-quit', () => { if (overlayWin && !overlayWin.isDestroyed()) overlayWin.destroy(); });
-app.on('before-quit', () => { if (hosted) { hosted.close(); hosted = null; } });
+
