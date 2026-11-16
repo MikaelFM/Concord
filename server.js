@@ -389,6 +389,10 @@ function start(opts = {}) {
     if (req.method === 'POST' && url.pathname === '/upload') return handleUpload(req, res);
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end(); }
     if (url.pathname === '/info') return json(res, 200, { port: PORT, addresses: localIPv4().map((i) => i.address) });
+    if (url.pathname === '/baixar') { // instalador mais novo, publicado no GitHub
+      res.writeHead(302, { Location: `https://github.com/${process.env.CONCORD_REPO || 'MikaelFM/Concord'}/releases/latest/download/Concord-Instalador.exe` });
+      return res.end();
+    }
     if (url.pathname === '/atualizacao') return json(res, 200, updateManifest());
     if (url.pathname === '/atualizacao/arquivo') {
       const files = updateManifest().files;

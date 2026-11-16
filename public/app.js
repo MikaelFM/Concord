@@ -15,6 +15,8 @@ for (const id of ['login', 'loginForm', 'nameInput', 'secureHint', 'userInput', 
   'railMute', 'railDeafen', 'railAvatar', 'sidebarToggle', 'vpTimer', 'app', 'bugBtn', 'homeItem', 'homeBadge', 'friendsPage', 'callBar', 'sendBtn', 'dmCallBtn', 'dmVideoBtn', 'threadsBtn', 'pinsBtn', 'searchInput', 'searchClear', 'searchBox', 'newBar', 'jumpBottom', 'sidePanel', 'ringBox', 'callChatBtn', 'callChatBadge', 'callChatHead', 'callChatTitle', 'callChatMin', 'inviteBtn', 'addChannelRail']) els[id] = document.getElementById(id);
 
 const desk = window.desktop || null;
+// no navegador, a tela de login oferece o app para Windows
+if (!desk && /Windows/.test(navigator.userAgent)) { const d = document.getElementById('authDownload'); if (d) d.hidden = false; }
 
 function load(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; } }
 function store(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch { /* sem storage */ } }

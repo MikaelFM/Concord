@@ -19,7 +19,7 @@ packager({
   icon: path.join(__dirname, 'icon.ico'),
   appCopyright: 'Concord',
   win32metadata: { CompanyName: 'Concord', FileDescription: 'Concord', ProductName: 'Concord', InternalName: 'Concord' },
-  ignore: [/^\/dist($|\/)/, /^\/data($|\/)/, /^\/gerar-exe\.bat$/, /^\/iniciar\.bat$/, /^\/LEIA-ME\.md$/, /^\/\.git($|\/)/, /^\/debug\.log$/, /^\/publicar(-token\.txt|-atualizacao\.bat|\.js)$/],
+  ignore: [/^\/dist($|\/)/, /^\/data($|\/)/, /^\/gerar-exe\.bat$/, /^\/iniciar\.bat$/, /^\/LEIA-ME\.md$/, /^\/\.git($|\/)/, /^\/debug\.log$/, /^\/publicar(-token\.txt|-atualizacao\.bat|\.js|-instalador\.(bat|js))$/, /^\/gerar-instalador\.bat$/, /^\/instalador\.iss$/, /^\/servidor($|\/)/],
 }).then((paths) => {
   console.log('\n  Pronto! O app foi gerado em:\n');
   for (const p of paths) console.log('    ' + path.join(p, 'Concord.exe'));

@@ -1401,3 +1401,6 @@ kbd { display: inline-block; min-width: 22px; text-align: center; padding: 2px 7
 .mic-test-btn { display: inline-flex; align-items: center; gap: 6px; }
 .mic-test-btn svg { width: 16px; height: 16px; }
 .mic-test-btn.testing { background: var(--red); color: #fff; }
+.auth-download { margin-top: 12px; font-size: 14px; text-align: center; }
+.auth-download[hidden] { display: none; }
+.auth-download a { color: var(--link, var(--accent)); }
