@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Concord</title>
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="stylesheet" href="/style.css">
+  <script>
+    // aplica o tema antes de desenhar, para não piscar
+    try {
+      const s = JSON.parse(localStorage.getItem('dl-settings') || '{}');
+      document.documentElement.dataset.theme = !s.theme || (!s.v5 && s.theme === 'escuro') ? 'concord' : s.theme;
+      if (s.accent) document.documentElement.style.setProperty('--accent', s.accent);
+      if (s.fontSize) document.documentElement.style.setProperty('--font-size', s.fontSize + 'px');
+    } catch (e) { /* sem storage */ }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <nav class="servers">
+      <div class="server-item" id="homeItem" title="Pessoas e mensagens privadas">
+        <span class="pill"></span>
+        <div class="server-icon home-icon"><svg viewBox="0 0 24 24"><path class="b2" d="M9.5 5.5h9A3 3 0 0 1 21.5 8.5v6a3 3 0 0 1-3 3h-.5v2.6a.4.4 0 0 1-.68.28L14 17.5h-4.5a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3z"/><path class="b1" d="M5.5 2.5h8a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H9.2l-2.9 2.6a.4.4 0 0 1-.67-.3V13.5h-.13a3 3 0 0 1-3-3v-5a3 3 0 0 1 3-3z"/><circle class="dot" cx="6.6" cy="8" r="1.1"/><circle class="dot" cx="9.5" cy="8" r="1.1"/><circle class="dot" cx="12.4" cy="8" r="1.1"/></svg></div>
+        <span class="badge rail-badge" id="homeBadge" hidden></span>
+      </div>
+      <div class="server-sep"></div>
+      <div class="server-list" id="guildList"></div>
+      <div class="server-sep"></div>
+      <div class="server-item"><div class="server-icon add" id="addGuildBtn" title="Criar ou entrar em um servidor">+</div></div>
+      <div class="rail-me" id="railMe" hidden>
+        <button class="rail-btn" id="railLeave" title="Sair da chamada" hidden>
+          <svg viewBox="0 0 24 24" class="lu lu-hang-up"><path class="fill" d="M12 8.5c-3.6 0-6.9 1.1-9.1 3.1-.6.5-.7 1.4-.3 2.1l1.3 2.1c.4.6 1.2.9 1.9.6l2.8-1.1c.6-.2 1-.8 1-1.4v-2c1.5-.5 3.3-.5 4.8 0v2c0 .6.4 1.2 1 1.4l2.8 1.1c.7.3 1.5 0 1.9-.6l1.3-2.1c.4-.7.3-1.6-.3-2.1C18.9 9.6 15.6 8.5 12 8.5z"/></svg>
+        </button>
+        <button class="rail-btn" id="railMute" title="Silenciar microfone"></button>
+        <button class="rail-btn" id="railDeafen" title="Desativar áudio"></button>
+        <div class="rail-avatar" id="railAvatar" title="Configurações"></div>
+      </div>
+    </nav>
+
+    <aside class="sidebar">
+      <header class="server-name" id="serverHeader" title="Opções do servidor">
+        <span class="server-title" id="serverTitle">Concord</span>
+        <svg viewBox="0 0 24 24" class="lu lu-chevron-down server-chev"><path d="m6 9 6 6 6-6"/></svg>
+        <button class="icon-btn small" id="inviteBtn" title="Convidar pessoas">
+          <svg viewBox="0 0 24 24" class="lu lu-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+        </button>
+      </header>
+      <div class="channels" id="channels"></div>
+
+      <div id="voicePanel" class="voice-panel" hidden>
+        <div class="vp-status">
+          <div class="vp-text" id="vpText">
+            <div class="vp-title"><svg viewBox="0 0 24 24" class="lu lu-signal vp-bars"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>Voz conectada <span class="vp-timer" id="vpTimer"></span></div>
+            <div class="vp-sub" id="vpSub"></div>
+          </div>
+          <button class="icon-btn danger" id="leaveBtn" title="Desconectar">
+            <svg viewBox="0 0 24 24" class="lu lu-hang-up"><path class="fill" d="M12 8.5c-3.6 0-6.9 1.1-9.1 3.1-.6.5-.7 1.4-.3 2.1l1.3 2.1c.4.6 1.2.9 1.9.6l2.8-1.1c.6-.2 1-.8 1-1.4v-2c1.5-.5 3.3-.5 4.8 0v2c0 .6.4 1.2 1 1.4l2.8 1.1c.7.3 1.5 0 1.9-.6l1.3-2.1c.4-.7.3-1.6-.3-2.1C18.9 9.6 15.6 8.5 12 8.5z"/></svg>
+          </button>
+        </div>
+        <div class="vp-buttons">
+          <button class="vp-btn" id="camBtn" title="Ligar câmera">
+            <svg viewBox="0 0 24 24" class="lu lu-video"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+            <span>Câmera</span>
+          </button>
+          <button class="vp-btn" id="screenBtn" title="Compartilhar tela">
+            <svg viewBox="0 0 24 24" class="lu lu-screen-share"><path d="M13 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="m17 8 5-5"/><path d="M17 3h5v5"/></svg>
+            <span>Tela</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="user-panel">
+        <div class="me-box" id="meBox" title="Editar perfil">
+          <div class="avatar" id="meAvatar"></div>
+          <div class="me-text">
+            <div class="me-name" id="meName"></div>
+            <div class="me-status" id="meStatus">Online</div>
+          </div>
+        </div>
+        <button class="icon-btn" id="muteBtn" title="Silenciar microfone">
+          <svg viewBox="0 0 24 24" class="lu lu-mic on"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg>
+          <svg viewBox="0 0 24 24" class="lu lu-mic-off off"><path d="M12 19v3"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/><path d="M16.95 16.95A7 7 0 0 1 5 12v-2"/><path d="M18.89 13.23A7 7 0 0 0 19 12v-2"/><path d="m2 2 20 20"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/></svg>
+        </button>
+        <button class="icon-btn" id="deafenBtn" title="Desativar áudio">
+          <svg viewBox="0 0 24 24" class="lu lu-headphones on"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
+          <svg viewBox="0 0 24 24" class="lu lu-headphone-off off"><path d="M21 14h-1.343"/><path d="M9.128 3.47A9 9 0 0 1 21 12v3.343"/><path d="m2 2 20 20"/><path d="M20.414 20.414A2 2 0 0 1 19 21h-1a2 2 0 0 1-2-2v-3"/><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 2.636-6.364"/></svg>
+        </button>
+        <button class="icon-btn" id="settingsBtn" title="Configurações">
+          <svg viewBox="0 0 24 24" class="lu lu-settings"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <button class="icon-btn small" id="sidebarToggle" title="Esconder barra lateral (Ctrl+B)">
+          <svg viewBox="0 0 24 24" class="lu lu-panel-left"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+        </button>
+        <span id="topIcon" class="top-ico"></span>
+        <span class="topbar-title" id="topTitle"></span>
+        <span class="topbar-sep"></span>
+        <span class="topbar-desc" id="topDesc"></span>
+        <button class="icon-btn small" id="joinFromChat" hidden title="Entrar na chamada">
+          <svg viewBox="0 0 24 24" class="lu lu-volume-2"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></svg>
+        </button>
+        <button class="icon-btn top-ic" id="callChatBtn" hidden title="Mostrar o chat da chamada"><svg viewBox="0 0 24 24" class="lu lu-message-circle"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg><span class="cc-badge" id="callChatBadge" hidden></span></button>
+        <button class="icon-btn top-ic" id="dmCallBtn" hidden title="Ligar (voz)"><svg viewBox="0 0 24 24" class="lu lu-phone"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg></button>
+        <button class="icon-btn top-ic" id="dmVideoBtn" hidden title="Ligar com vídeo"><svg viewBox="0 0 24 24" class="lu lu-video"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></button>
+        <button class="icon-btn top-ic" id="threadsBtn" hidden title="Tópicos desta sala"><svg viewBox="0 0 24 24" class="lu lu-messages-square"><path d="M16 10a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 14.286V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/><path d="M20 9a2 2 0 0 1 2 2v10.286a.71.71 0 0 1-1.212.502l-2.202-2.202A2 2 0 0 0 17.172 19H10a2 2 0 0 1-2-2v-1"/></svg></button>
+        <button class="icon-btn top-ic" id="pinsBtn" title="Mensagens fixadas"><svg viewBox="0 0 24 24" class="lu lu-pin"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></button>
+        <div class="search-box" id="searchBox">
+          <input id="searchInput" type="text" placeholder="Buscar" autocomplete="off" spellcheck="false">
+          <svg viewBox="0 0 24 24" class="lu lu-search sb-ico"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <button type="button" id="searchClear" class="sb-clear" hidden title="Limpar"><svg viewBox="0 0 24 24" class="lu lu-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </div>
+        <button class="top-btn" id="bugBtn" title="Reportar um bug">
+          <svg viewBox="0 0 24 24" class="lu lu-bug"><path d="M12 20v-9"/><path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"/><path d="M14.12 3.88 16 2"/><path d="M21 21a4 4 0 0 0-3.81-4"/><path d="M21 5a4 4 0 0 1-3.55 3.97"/><path d="M22 13h-4"/><path d="M3 21a4 4 0 0 1 3.81-4"/><path d="M3 5a4 4 0 0 0 3.55 3.97"/><path d="M6 13H2"/><path d="m8 2 1.88 1.88"/><path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"/></svg>
+        </button>
+        <button class="top-btn" id="membersToggle" title="Esconder a lista de membros">
+          <svg viewBox="0 0 24 24" class="lu lu-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
+          <span>Membros</span>
+        </button>
+      </header>
+
+      <section id="friendsPage" class="friends-page" hidden></section>
+      <section id="stage" class="stage" hidden></section>
+      <div id="callBar" class="call-bar" hidden></div>
+
+      <div id="callChatHead" class="call-chat-head" hidden><span class="cch-title"><svg viewBox="0 0 24 24" class="lu lu-message-circle"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg><b id="callChatTitle">Chat</b></span><button type="button" class="icon-btn small" id="callChatMin" title="Minimizar o chat"><svg viewBox="0 0 24 24" class="lu lu-panel-right-close"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m8 9 3 3-3 3"/></svg></button></div>
+      <div class="messages-wrap">
+        <div id="newBar" class="new-bar" hidden></div>
+        <div id="messages" class="messages"></div>
+        <button type="button" id="jumpBottom" class="jump-bottom" hidden><svg viewBox="0 0 24 24" class="lu lu-arrow-down"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg><span>Ir para as mensagens recentes</span></button>
+        <aside id="sidePanel" class="side-panel" hidden></aside>
+      </div>
+
+      <form id="composer" class="composer" autocomplete="off">
+        <div id="autocomplete" class="autocomplete" hidden></div>
+        <div id="replyBar" class="reply-bar" hidden>
+          <span>Respondendo a <b id="replyName"></b></span>
+          <button type="button" id="replyCancel" title="Cancelar">
+            <svg viewBox="0 0 24 24" class="lu lu-circle-x"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+          </button>
+        </div>
+        <div id="attachBar" class="attach-bar" hidden></div>
+        <div class="composer-box" id="composerBox">
+          <button type="button" class="attach" id="attachBtn" title="Enviar arquivo">
+            <svg viewBox="0 0 24 24" class="lu lu-circle-plus"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+          </button>
+          <textarea id="input" rows="1" maxlength="2000"></textarea>
+          <button type="button" class="emoji-btn" id="emojiBtn" title="Emojis"><svg viewBox="0 0 24 24" class="lu lu-face-slightly-smiling"><path d="M15 10V9"/><path d="M16.472 15a6 6 0 01-8.943 0"/><path d="M9 10V9"/><circle cx="12" cy="12" r="10"/></svg></button>
+          <button type="submit" class="send-btn" id="sendBtn" title="Enviar (Enter)"><svg viewBox="0 0 24 24" class="lu lu-send-horizontal"><path d="M3.714 3.048a.498.498 0 0 0-.683.627l2.843 7.627a2 2 0 0 1 0 1.396l-2.842 7.627a.498.498 0 0 0 .682.627l18-8.5a.5.5 0 0 0 0-.904z"/><path d="M6 12h16"/></svg></button>
+          <input type="file" id="fileInput" multiple hidden>
+        </div>
+        <div id="typing" class="typing"></div>
+      </form>
+      <div id="dropOverlay" class="drop-overlay" hidden><div>Solte os arquivos para anexar</div></div>
+    </main>
+
+    <aside class="members" id="members"></aside>
+  </div>
+
+  <div id="banner" class="banner" hidden>Conexão perdida. Reconectando…</div>
+  <div id="toasts" class="toasts"></div>
+  <div id="ringBox" class="ring-box" hidden></div>
+  <div id="notifs" class="notifs"></div>
+  <div id="popover" class="popover" hidden></div>
+  <div id="emojiPicker" class="emoji-picker" hidden></div>
+  <div id="ctxMenu" class="ctx-menu" hidden></div>
+  <div id="modalRoot"></div>
+
+  <div id="login" class="modal" hidden>
+    <form class="modal-card auth-card" id="loginForm" novalidate>
+      <div class="logo logo-img"><img class="logo-svg" src="/logo.png" alt="Concord"></div>
+      <h1 id="authTitle">Boas-vindas de volta!</h1>
+      <p id="authSub">Que bom te ver de novo!</p>
+      <div class="auth-error" id="authError" hidden></div>
+      <div id="nameField" hidden>
+        <label for="nameInput">Nome de exibição</label>
+        <input id="nameInput" maxlength="32" autocomplete="nickname" placeholder="Como a galera vai te ver">
+      </div>
+      <label for="userInput">Nome de usuário</label>
+      <input id="userInput" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="ex.: mikael_fm">
+      <label for="passInput">Senha</label>
+      <input id="passInput" type="password" maxlength="128" autocomplete="current-password">
+      <div id="pass2Field" hidden>
+        <label for="pass2Input">Confirmar senha</label>
+        <input id="pass2Input" type="password" maxlength="128" autocomplete="new-password">
+      </div>
+      <button type="submit" class="primary" id="authBtn">Entrar</button>
+      <p class="auth-switch"><span id="authSwitchText">Precisa de uma conta?</span> <a href="#" id="authSwitch">Criar conta</a></p>
+      <p class="hint" id="secureHint" hidden>Atenção: abra pelo endereço <b>https://</b> para usar voz, câmera e tela.</p>
+    </form>
+  </div>
+
+  <div id="lightbox" class="lightbox" hidden><img alt=""><div class="lb-bar"></div></div>
+
+  <script src="/icons.js"></script>
+  <script src="/emojis.js"></script>
+  <script src="/voice.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

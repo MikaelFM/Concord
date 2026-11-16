@@ -1,0 +1,32 @@
+'use strict';
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('desktop', {
+  isDesktop: true,
+  config: () => ipcRenderer.invoke('config:get'),
+  host: (port, remember) => ipcRenderer.invoke('host', port, remember),
+  join: (address, remember) => ipcRenderer.invoke('join', address, remember),
+  home: () => ipcRenderer.invoke('home'),
+  getSources: () => ipcRenderer.invoke('screen:sources'),
+  selectSource: (id, audio) => ipcRenderer.invoke('screen:select', id, audio),
+  flash: () => ipcRenderer.send('flash'),
+  focus: () => ipcRenderer.send('focus'),
+  openExternal: (url) => ipcRenderer.send('open-external', url),
+  onGame: (cb) => { ipcRenderer.on('game', (e, name) => cb(name)); ipcRenderer.invoke('game:get').then((n) => { if (n) cb(n); }); },
+  setCustomGames: (list) => ipcRenderer.send('games:set', list),
+  idle: () => ipcRenderer.invoke('idle'),
+  version: () => ipcRenderer.invoke('version'),
+  checkUpdate: () => ipcRenderer.invoke('check-update'),
+  onDownload: (cb) => ipcRenderer.on('download', (e, d) => cb(d)),
+  openDownload: (p) => ipcRenderer.send('download-open', p),
+  showDownload: (p) => ipcRenderer.send('download-show', p),
+  notify: (n) => ipcRenderer.send('notify', n),
+  onNotifyClick: (cb) => ipcRenderer.on('notify-click', (e, data) => cb(data)),
+  setGlobalKeys: (keys) => ipcRenderer.invoke('global-keys', keys),
+  onGlobalKey: (cb) => ipcRenderer.on('global-key', (e, name) => cb(name)),
+  overlay: (st) => ipcRenderer.send('overlay', st),
+  overlayMessage: (m) => ipcRenderer.send('overlay-msg', m),
+  overlayToggle: () => ipcRenderer.send('overlay-toggle'),
+  overlayEdit: () => ipcRenderer.send('overlay-edit'),
+  onOverlayPosSaved: (cb) => ipcRenderer.on('overlay-pos-saved', () => cb()),
+});

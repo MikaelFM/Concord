@@ -1,0 +1,56 @@
+[
+  {
+    "version": "2.2.0",
+    "date": "11/11/2026",
+    "title": "Chamadas e sobreposição no jogo",
+    "items": [
+      "Sons do servidor: em Configurações do servidor → Sons dá para escolher um som próprio para quando alguém entra ou sai da chamada, mensagem nova e começo/fim de live. Quem preferir os padrões desliga em Configurações → Notificações.",
+      "\"Testar microfone\" agora toca a sua voz de volta para você se ouvir (com o eliminador de ruído aplicado) e vira \"Parar teste\" enquanto está ligado.",
+      "O app lembra se você deixou o microfone ou o fone mutado e abre do mesmo jeito.",
+      "Ícone novo: o Concorde.",
+      "Na chamada, as pessoas ficam grandes à esquerda e o chat da chamada fica à direita (dá para minimizar).",
+      "Quando alguém faz live, a tela fica em destaque ocupando toda a largura e as câmeras ficam numa fileira embaixo (o botão com as pessoas esconde ou mostra a fileira; clique numa câmera para pôr ela em destaque).",
+      "Dá para mudar a transparência da sobreposição (Configurações → Sobreposição no jogo).",
+      "Em tela cheia, o botão de balão abre o chat da chamada ao lado do vídeo para ver e mandar mensagens sem sair (dá para minimizar; aparece um contador de mensagens novas).",
+      "Som quando alguém da chamada começa ou para de compartilhar a tela.",
+      "Sobreposição no jogo: quem está na chamada, quem está falando e as mensagens aparecem por cima do jogo (Configurações → Sobreposição no jogo, onde também dá para arrastar para a posição que quiser).",
+      "Atalhos do teclado: Ctrl+K para ir a qualquer sala, Alt+↑/↓ para trocar de sala, Ctrl+Shift+M/D para microfone e fone, e muito mais (Ctrl+/ mostra todos).",
+      "No app, os atalhos de microfone, fone e sobreposição funcionam com o jogo na frente enquanto você está em chamada.",
+      "Notificações do Windows funcionando com o app minimizado, com botão para testar em Configurações → Notificações.",
+      "O app lembra o último servidor e entra direto nele.",
+      "A versão do app e do servidor aparece no fim das Configurações.",
+      "O bot de música foi desligado por enquanto.",
+      "Baixar arquivos do chat: botão nas imagens (e na imagem ampliada); no app, os arquivos vão direto para a pasta Downloads com opção de abrir.",
+      "Atalhos de microfone, fone e sobreposição aceitam uma tecla sozinha (ex.: F8).",
+      "Mensagens no chat da chamada avisam (som e popup) quando o chat está minimizado ou você está em tela cheia sem o chat aberto.",
+      "Os nomes dos cargos na lista de membros aparecem como foram escritos, sem virar tudo maiúsculo."
+    ]
+  },
+  {
+    "version": "2.1.0",
+    "date": "11/11/2026",
+    "title": "Ligações, status e busca",
+    "items": [
+      "Ligação no privado com voz, câmera e tela, com toque para atender ou recusar.",
+      "Status: Online, Ausente (automático), Não perturbe e Invisível. Clique no seu nome no canto de baixo.",
+      "Mensagens fixadas e busca com filtros (de:, em:, tem:, antes:, depois:).",
+      "Tópicos: conversas paralelas a partir de uma mensagem.",
+      "Linha de \"Novas\" mostrando onde você parou e botão para voltar às mensagens recentes.",
+      "Notificações por servidor e por sala: todas, só menções ou nada, silenciar e ignorar @todos.",
+      "Silenciar alguém só para você ou, para quem tem cargo, para todos na chamada.",
+      "Atualização automática do app.",
+      "Novo nome (Concord), novo ícone, visual novo e ícones Lucide."
+    ]
+  },
+  {
+    "version": "2.0.0",
+    "date": "10/11/2026",
+    "title": "Servidores, cargos e bot de música",
+    "items": [
+      "Vários servidores com convites, cargos e permissões.",
+      "Contas com usuário e senha.",
+      "Bot de música, atividade (jogo que você está jogando) e eliminador de ruído.",
+      "Tela compartilhada em até 1080p e 60 fps, volume de cada pessoa e mover pessoas entre chamadas."
+    ]
+  }
+]

@@ -1,0 +1,31 @@
+'use strict';
+// Jogos reconhecidos automaticamente (nome do programa em minúsculas -> nome que aparece).
+module.exports = {
+  'minecraft.exe': 'Minecraft', 'minecraftlauncher.exe': 'Minecraft', 'minecraft.windows.exe': 'Minecraft',
+  'javaw.exe': null, // Minecraft Java roda como javaw, mas outros programas também: só conta junto com o launcher
+  'valorant-win64-shipping.exe': 'VALORANT', 'league of legends.exe': 'League of Legends', 'cs2.exe': 'Counter-Strike 2', 'csgo.exe': 'Counter-Strike: GO',
+  'fortniteclient-win64-shipping.exe': 'Fortnite', 'gta5.exe': 'Grand Theft Auto V', 'gta5_enhanced.exe': 'Grand Theft Auto V', 'robloxplayerbeta.exe': 'Roblox',
+  'r5apex.exe': 'Apex Legends', 'r5apex_dx12.exe': 'Apex Legends', 'overwatch.exe': 'Overwatch 2', 'dota2.exe': 'Dota 2', 'rocketleague.exe': 'Rocket League',
+  'eldenring.exe': 'ELDEN RING', 'rdr2.exe': 'Red Dead Redemption 2', 'cyberpunk2077.exe': 'Cyberpunk 2077', 'witcher3.exe': 'The Witcher 3',
+  'fc25.exe': 'EA SPORTS FC 25', 'fc26.exe': 'EA SPORTS FC 26', 'fc24.exe': 'EA SPORTS FC 24', 'efootball.exe': 'eFootball',
+  'tslgame.exe': 'PUBG: BATTLEGROUNDS', 'rainbowsix.exe': 'Rainbow Six Siege', 'rainbowsix_vulkan.exe': 'Rainbow Six Siege', 'cod.exe': 'Call of Duty',
+  'modernwarfare.exe': 'Call of Duty', 'cod24-cod.exe': 'Call of Duty', 'destiny2.exe': 'Destiny 2', 'warframe.x64.exe': 'Warframe',
+  'terraria.exe': 'Terraria', 'stardew valley.exe': 'Stardew Valley', 'among us.exe': 'Among Us', 'fallguys_client.exe': 'Fall Guys',
+  'phasmophobia.exe': 'Phasmophobia', 'lethal company.exe': 'Lethal Company', 'deadbydaylight-win64-shipping.exe': 'Dead by Daylight',
+  'rust.exe': 'Rust', 'valheim.exe': 'Valheim', 'palworld-win64-shipping.exe': 'Palworld', 'helldivers2.exe': 'HELLDIVERS 2',
+  'bg3.exe': "Baldur's Gate 3", 'bg3_dx11.exe': "Baldur's Gate 3", 'hollow_knight.exe': 'Hollow Knight', 'sekiro.exe': 'Sekiro',
+  'darksoulsiii.exe': 'Dark Souls III', 'skyrimse.exe': 'Skyrim', 'fallout4.exe': 'Fallout 4', 'starfield.exe': 'Starfield',
+  'forzahorizon5.exe': 'Forza Horizon 5', 'forzahorizon4.exe': 'Forza Horizon 4', 'acs.exe': 'Assetto Corsa', 'f1_24.exe': 'F1 24',
+  'pathofexile.exe': 'Path of Exile', 'pathofexile_x64.exe': 'Path of Exile', 'pathofexile2.exe': 'Path of Exile 2', 'diablo iv.exe': 'Diablo IV',
+  'wow.exe': 'World of Warcraft', 'ffxiv_dx11.exe': 'Final Fantasy XIV', 'genshinimpact.exe': 'Genshin Impact', 'starrail.exe': 'Honkai: Star Rail',
+  'zenlesszonezero.exe': 'Zenless Zone Zero', 'wutheringwaves.exe': 'Wuthering Waves', 'marvel-win64-shipping.exe': 'Marvel Rivals',
+  'deadlock.exe': 'Deadlock', 'thefinals.exe': 'THE FINALS', 'hunt.exe': 'Hunt: Showdown', 'escapefromtarkov.exe': 'Escape from Tarkov',
+  'arma3_x64.exe': 'Arma 3', 'dayz_x64.exe': 'DayZ', 'factorio.exe': 'Factorio', 'satisfactory.exe': 'Satisfactory', 'subnautica.exe': 'Subnautica',
+  'sims4.exe': 'The Sims 4', 'ts4_x64.exe': 'The Sims 4', 'cities.exe': 'Cities: Skylines', 'civilizationvi.exe': 'Civilization VI',
+  'hl2.exe': 'Half-Life 2', 'left4dead2.exe': 'Left 4 Dead 2', 'portal2.exe': 'Portal 2', 'brawlhalla.exe': 'Brawlhalla',
+  'osu!.exe': 'osu!', 'geometrydash.exe': 'Geometry Dash', 'tmforever.exe': 'Trackmania', 'trackmania.exe': 'Trackmania',
+  'beamng.drive.x64.exe': 'BeamNG.drive', 'eurotrucks2.exe': 'Euro Truck Simulator 2', 'amtrucks.exe': 'American Truck Simulator',
+  'sotgame.exe': 'Sea of Thieves', 'nmsse.exe': "No Man's Sky", 'nms.exe': "No Man's Sky", 'rocketleague.exe ': 'Rocket League',
+  'pubg.exe': 'PUBG', 'freefire.exe': 'Free Fire', 'brawlstars.exe': 'Brawl Stars', 'clashroyale.exe': 'Clash Royale',
+  'tibia.exe': 'Tibia', 'client.exe': null, 'mu.exe': 'MU Online', 'ragnarok.exe': 'Ragnarok Online', 'grandchase.exe': 'GrandChase',
+};
